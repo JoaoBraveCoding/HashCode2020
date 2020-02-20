@@ -1,6 +1,17 @@
 import random
 import sys
 
+book_score = []
+max_days = 0
+libs = []
+
+class lib:
+    def __init__(self, sign_up, books, books_per_day):
+        self.sign_up = sign_up
+        self.books = books
+        self.books_per_day = books_per_day
+
+
 def ss_out(file_name, slideshow):
     out = ""
     out += str(len(slideshow)) + "\n"
@@ -16,41 +27,72 @@ def ss_out(file_name, slideshow):
     f.close()
 
 
-def add_photo(line, id):
-    photo = {}
-    array = line.split(' ')
-    photo['orientation'] = array[0]
-    photo['tags'] = array[2:]
-    photo['id'] = id
-    pong = photo['tags'][-1][:-1]
-    photo['tags'][-1] = pong
-    photo['tags'] = set(photo['tags'])
-    if photo['orientation'] == 'V':
-        photos.append(photo)
-        photosV.append(photo)
-    else:
-        photos.append(photo)
-        photosH.append(photo)
+# take second element for sort
+def value(elem):
+    return book_score[elem]*-1
+
+def organize_books(book_array):
+    book_array.sort(key=value)
+    #TODO não sei se o parametro é alterado ou se o tenho de retornar
+    return book_array
+
+def get_book(book_array):
+    best_book = book_array[0]
+    return best_book
 
 
 def main():
     # Parsing
     file_name = sys.argv[1]
     f = open(file_name, 'r')
-    f.readline()
-    i = 0
-    for line in f:
-        add_photo(line, i)
-        i += 1
 
-    # Algorithm
-    slides = make_slides(photosH, photosV)
-    slideshow = make_ss(slides)
- 
+    #First Line aka number of days
+    first_line = f.readline()
+    line_params = first_line.split(' ')
+    max_days = int(line_params[2])
+
+    #Second line aka book scores
+    second_line = f.readline().split(' ')
+    for param in second_line:
+        book_score.append(int(param))
+
+    #Rest of the lines aka populate libs
+    #Reads two lines to create a lib
+    for line in f:
+        #Gets the first line with the sign_up and books_per_day
+        line_params = line.split(' ')
+
+        #Gets the books
+        library_books = f.readline().split(' ')
+        books = []
+        for param in library_books:
+            if param != '':
+                books.append(int(param))
+            
+        libs.append(lib(line_params[1], books, line_params[2]))
+
     
+    print("Max days: ", max_days)
+    print("Printing Book Scores")
+    for book in book_score:
+        print(book)
+
+    for library in libs:
+        print("Printing lib")
+        print("Sign Up: " + library.sign_up)
+        print(library.books)
+        print("Book per Day: " + library.books_per_day)
+
+
+    #Algorith
+ 
     # Output
-    ss_out(file_name, slideshow)
+    #ss_out(file_name, slideshow)
 
 
 if __name__ == "__main__":
     main()
+
+
+
+
