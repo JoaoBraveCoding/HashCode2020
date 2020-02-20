@@ -16,6 +16,7 @@ jobs:
   saveZip:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - name: Generate Zip
       run: ./zipit.sh
     - name: Save Zip
