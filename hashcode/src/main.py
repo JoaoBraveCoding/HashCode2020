@@ -1,3 +1,5 @@
+import random
+import sys
 
 def ss_out(file_name, slideshow):
     out = ""
