@@ -100,14 +100,15 @@ def get_book(lib):
 def main():
     file_name = sys.argv[1]
     ss_in(file_name)
-
     #Algorith
     #get melhor lib
     #actualizar dias que faltam
     #acTUALIZAR O VALOR DOS LIVOS
     #actualizar valor das libs
     #reordenar o array de libs
-
+	while (day<max_days):
+		global day+=1
+		
 
     # Output
     ss_out(file_name)
@@ -151,12 +152,15 @@ def choose_lib():
         new_lib = points_per_lib(libs[i], i)
         if (best_lib == None or new_lib[0] > best_lib[0]):
             best_lib = new_lib
-    
-    return best_lib
+		
+	num_of_books = len(best_lib[1].books)
+	
+	while(num_of_books>0):
+		get_book = best_lib[1].sign_up
+		num_of_books-=1
+	
+    return best_lib[1]
 
-day = 0
 
-while (day<max_days):
-    #do stuff
-    #
-    day+=1
+
+
