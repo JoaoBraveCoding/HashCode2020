@@ -36,8 +36,9 @@ def organize_books(book_array):
     #TODO não sei se o parametro é alterado ou se o tenho de retornar
     return book_array
 
-def get_book(book_array):
-    best_book = book_array[0]
+def get_book(lib):
+    best_book = lib.books[0]
+    lib.books = lib.books[1:]
     return best_book
 
 
@@ -69,22 +70,16 @@ def main():
             if param != '':
                 books.append(int(param))
             
+        organize_books(books)
         libs.append(lib(line_params[1], books, line_params[2]))
-
-    
-    print("Max days: ", max_days)
-    print("Printing Book Scores")
-    for book in book_score:
-        print(book)
-
-    for library in libs:
-        print("Printing lib")
-        print("Sign Up: " + library.sign_up)
-        print(library.books)
-        print("Book per Day: " + library.books_per_day)
 
 
     #Algorith
+    #get melhor lib
+    #actualizar dias que faltam
+    #acTUALIZAR O VALOR DOS LIVOS
+    #actualizar valor das libs
+    #reordenar o array de libs
  
     # Output
     #ss_out(file_name, slideshow)
