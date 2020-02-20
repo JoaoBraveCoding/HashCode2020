@@ -47,7 +47,7 @@ def main():
     slides = make_slides(photosH, photosV)
     slideshow = make_ss(slides)
  
- 
+    
     # Output
     ss_out(file_name, slideshow)
 
