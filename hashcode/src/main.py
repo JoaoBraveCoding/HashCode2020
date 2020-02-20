@@ -7,6 +7,7 @@ libs = []
 out_libs = []
 globalbooks = []
 books = []
+day = 0
 
 class lib:
     def __init__(self, sign_up, books, books_per_day):
@@ -118,3 +119,44 @@ if __name__ == "__main__":
 
 
 
+
+
+#passar id quando usado no choose_lib
+def points_per_lib(lib, id):
+    time_left = day - lib.sign_up
+    #self.books_per_day
+    #self.books - supostamente deve estar organizada por pontos
+    num_of_books = time_left * lib.books_per_day
+    books = []
+    book_count=0
+    total = 0
+    #self books
+    temp_books = books[:]
+    while(book_count<num_of_books):
+        book = temp_books[0]
+        temp_books = temp_books[1:]
+        if(book == []):
+            break
+        book_points = value(book)
+        books.append(book)
+        total+=book_points
+        book_count+=1
+
+    points_lib = lib(id, books, lib.books_per_day)
+    return [total, points_lib]
+
+def choose_lib():
+    best_lib = None
+    for i in range(0, len(libs)):
+        new_lib = points_per_lib(libs[i], i)
+        if (best_lib == None or new_lib[0] > best_lib[0]):
+            best_lib = new_lib
+    
+    return best_lib
+
+day = 0
+
+while (day<max_days):
+    #do stuff
+    #
+    day+=1
