@@ -13,3 +13,13 @@ jobs:
         python-version: 3.8
     - name: Test
       run: ./run.sh
+  saveZip:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Generate Zip
+      run: ./zipit.sh
+    - name: Save Zip
+      uses: actions/upload-artifact@v1
+      with:
+        name: solution
+        path: solution.zip
