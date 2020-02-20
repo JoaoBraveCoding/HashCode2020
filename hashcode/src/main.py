@@ -4,6 +4,9 @@ import sys
 book_score = []
 max_days = 0
 libs = []
+out_libs = []
+globalbooks = []
+books = []
 
 class lib:
     def __init__(self, sign_up, books, books_per_day):
@@ -11,41 +14,16 @@ class lib:
         self.books = books
         self.books_per_day = books_per_day
 
+class book:
+    def __init__(self, book_id):
+        self.book_id = book_id
+        self.added = False
 
-def ss_out(file_name, slideshow):
-    out = ""
-    out += str(len(slideshow)) + "\n"
-    file_name_splited = file_name.split("/")
-    for i in slideshow:
-        # TODO update this
-        tempS = ""
-        for j in i[0]:
-            tempS += str(j) + " "
-        out += tempS + "\n"
-    f = open("hashcode/out/" + file_name_splited[2], 'w')
-    f.writelines(out)
-    f.close()
-
-
-# take second element for sort
-def value(elem):
-    return book_score[elem]*-1
-
-def organize_books(book_array):
-    book_array.sort(key=value)
-    #TODO não sei se o parametro é alterado ou se o tenho de retornar
-    return book_array
-
-def get_book(lib):
-    best_book = lib.books[0]
-    lib.books = lib.books[1:]
-    return best_book
-
-
-def main():
+def ss_in(file_name):
     # Parsing
-    file_name = sys.argv[1]
     f = open(file_name, 'r')
+
+    global max_days, book_score, books, libs 
 
     #First Line aka number of days
     first_line = f.readline()
@@ -54,8 +32,12 @@ def main():
 
     #Second line aka book scores
     second_line = f.readline().split(' ')
+    i = 0
     for param in second_line:
         book_score.append(int(param))
+        books.append(book(i))
+        i += 1
+
 
     #Rest of the lines aka populate libs
     #Reads two lines to create a lib
@@ -65,14 +47,58 @@ def main():
 
         #Gets the books
         library_books = f.readline().split(' ')
-        books = []
+        books_to_append = []
         for param in library_books:
             if param != '':
-                books.append(int(param))
+                books_to_append.append( books[ int(param) ] )
             
-        organize_books(books)
-        libs.append(lib(line_params[1], books, line_params[2]))
+        organize_books(books_to_append)
+        libs.append(lib(line_params[1], books_to_append, line_params[2]))
 
+
+def ss_out(file_name):
+    out = "" + str(len(out_libs)) + "\n"
+    for libe in out_libs:
+        out += str(libe.sign_up) + " " + str(len(libe.books)) + "\n"
+        tempS = ""
+        for j in libe.books:
+            tempS += str(j) + " "
+        out += tempS + "\n"
+
+
+    file_name_splited = file_name.split("/")
+    f = open("hashcode/out/" + file_name_splited[2], 'w')
+    f.writelines(out)
+    f.close()
+
+
+# take second element for sort
+def value(elem):
+    return book_score[elem.book_id]*-1
+
+def organize_books(book_array):
+    book_array.sort(key=value)
+    #TODO não sei se o parametro é alterado ou se o tenho de retornar
+    return book_array
+
+
+def get_book(lib):
+    best_book = None
+    if len(lib.books) > 0:
+        while len(lib.books) > 1:
+            best_book = lib.books[0]
+            lib.books = lib.books[1:]
+            if not best_book.added:
+                break
+        if best_book.added and len(lib.books) == 1 and not lib.books[0].added:
+            best_book = lib.books[0]
+
+    return best_book
+
+
+def main():
+    file_name = sys.argv[1]
+    ss_in(file_name)
 
     #Algorith
     #get melhor lib
@@ -80,9 +106,10 @@ def main():
     #acTUALIZAR O VALOR DOS LIVOS
     #actualizar valor das libs
     #reordenar o array de libs
- 
+
+
     # Output
-    #ss_out(file_name, slideshow)
+    ss_out(file_name)
 
 
 if __name__ == "__main__":
