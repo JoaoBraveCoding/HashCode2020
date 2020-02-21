@@ -10,10 +10,12 @@ books = []
 day = 0
 
 class lib:
-    def __init__(self, sign_up, books, books_per_day):
+    def __init__(self, number, sign_up, books, books_per_day):
+        self.number = number
         self.sign_up = sign_up
         self.books = books
         self.books_per_day = books_per_day
+        self.shiped_books = []
 
 class book:
     def __init__(self, book_id):
@@ -27,9 +29,8 @@ def ss_in(file_name):
     global max_days, book_score, books, libs 
 
     #First Line aka number of days
-    first_line = f.readline()
-    line_params = first_line.split(' ')
-    max_days = int(line_params[2])
+    first_line = f.readline().split(' ')
+    max_days = int(first_line[2])
 
     #Second line aka book scores
     second_line = f.readline().split(' ')
@@ -42,9 +43,10 @@ def ss_in(file_name):
 
     #Rest of the lines aka populate libs
     #Reads two lines to create a lib
-    for line in f:
+    i = 0
+    for _ in first_line[1]*2:
         #Gets the first line with the sign_up and books_per_day
-        line_params = line.split(' ')
+        lib_params = f.readline().split(' ')
 
         #Gets the books
         library_books = f.readline().split(' ')
@@ -54,21 +56,22 @@ def ss_in(file_name):
                 books_to_append.append( books[ int(param) ] )
             
         organize_books(books_to_append)
-        libs.append(lib(line_params[1], books_to_append, line_params[2]))
+        libs.append(lib(i, int(lib_params[1]), books_to_append, int(lib_params[2])))
+        i += 1
 
 
 def ss_out(file_name):
     out = "" + str(len(out_libs)) + "\n"
     for libe in out_libs:
-        out += str(libe.sign_up) + " " + str(len(libe.books)) + "\n"
+        out += str(libe.number) + " " + str(len(libe.shiped_books)) + "\n"
         tempS = ""
-        for j in libe.books:
-            tempS += str(j) + " "
+        for j in libe.shiped_books:
+            tempS += str(j.book_id) + " "
         out += tempS + "\n"
 
 
     file_name_splited = file_name.split("/")
-    f = open("hashcode/out/" + file_name_splited[2], 'w')
+    f = open("hashcode/out/" + file_name_splited[3], 'w')
     f.writelines(out)
     f.close()
 
@@ -82,33 +85,72 @@ def organize_books(book_array):
     #TODO não sei se o parametro é alterado ou se o tenho de retornar
     return book_array
 
+def sum_books_values(book_array):
+    total = 0
+    for book in book_array:
+        total += book_score[book.book_id]
+    return total
 
 def get_book(lib):
     best_book = None
     if len(lib.books) > 0:
-        while len(lib.books) > 1:
+        while len(lib.books) >= 2:
             best_book = lib.books[0]
             lib.books = lib.books[1:]
             if not best_book.added:
                 break
-        if best_book.added and len(lib.books) == 1 and not lib.books[0].added:
+        if len(lib.books) == 1 and (best_book == None) or (best_book.added and not lib.books[0].added):
             best_book = lib.books[0]
+            lib.books = []
 
-    return best_book
+        if best_book != None:
+            lib.shiped_books.append(best_book)
 
+    return None
+
+def get_lib_value(elem):
+    days_until_no_more_books = len(elem.books)/elem.books_per_day
+    return sum_books_values(elem.books)/days_until_no_more_books * -1
+
+def sort_libs():
+    global libs
+    libs.sort(key=get_lib_value)
+
+def pick_new_lib(i):
+    global out_libs, libs
+
+    if len(libs) > 0:
+        # Sort from once in a while
+        if i % 5 == 0:
+            sort_libs()
+        
+        # Retrice always the first lib
+        picked_lib = libs[0]
+        libs = libs[1:]
+        
+        out_libs.append(picked_lib)
+        return picked_lib.sign_up
+    return 0
+
+
+def let_time_fly():
+    sigh_up = 0
+    for i in range(0, max_days):
+        if sigh_up == 0:
+            sigh_up = pick_new_lib(i)
+        sigh_up -= 1
+        
+        for lib in out_libs:
+            for _ in range(0, lib.books_per_day):
+                get_book(lib)
+    return 
 
 def main():
+    # Input
     file_name = sys.argv[1]
     ss_in(file_name)
     #Algorith
-    #get melhor lib
-    #actualizar dias que faltam
-    #acTUALIZAR O VALOR DOS LIVOS
-    #actualizar valor das libs
-    #reordenar o array de libs
-	while (day<max_days):
-		global day+=1
-		
+    let_time_fly()
 
     # Output
     ss_out(file_name)
@@ -117,49 +159,6 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-
-
-
-
-#passar id quando usado no choose_lib
-def points_per_lib(lib, id):
-    time_left = day - lib.sign_up
-    #self.books_per_day
-    #self.books - supostamente deve estar organizada por pontos
-    num_of_books = time_left * lib.books_per_day
-    books = []
-    book_count=0
-    total = 0
-    #self books
-    temp_books = books[:]
-    while(book_count<num_of_books):
-        book = temp_books[0]
-        temp_books = temp_books[1:]
-        if(book == []):
-            break
-        book_points = value(book)
-        books.append(book)
-        total+=book_points
-        book_count+=1
-
-    points_lib = lib(id, books, lib.books_per_day)
-    return [total, points_lib]
-
-def choose_lib():
-    best_lib = None
-    for i in range(0, len(libs)):
-        new_lib = points_per_lib(libs[i], i)
-        if (best_lib == None or new_lib[0] > best_lib[0]):
-            best_lib = new_lib
-		
-	num_of_books = len(best_lib[1].books)
-	
-	while(num_of_books>0):
-		get_book = best_lib[1].sign_up
-		num_of_books-=1
-	
-    return best_lib[1]
 
 
 
