@@ -7,7 +7,7 @@ libs = []
 out_libs = []
 globalbooks = []
 books = []
-day = 0
+days_left = 0
 
 class lib:
     def __init__(self, number, sign_up, books, books_per_day):
@@ -110,7 +110,16 @@ def get_book(lib):
 
 def get_lib_value(elem):
     days_until_no_more_books = len(elem.books)/elem.books_per_day
-    return sum_books_values(elem.books)/days_until_no_more_books * -1
+
+    days_it_still_can_supply = days_until_no_more_books - days_left
+    if days_it_still_can_supply < 0 :
+        days_it_still_can_supply = days_until_no_more_books
+    else:
+        days_it_still_can_supply = days_left
+    
+
+    possible_remeinder_score = sum_books_values(elem.books) / days_left
+    return (possible_remeinder_score + days_it_still_can_supply)*-1
 
 def sort_libs():
     global libs
@@ -134,8 +143,10 @@ def pick_new_lib(i):
 
 
 def let_time_fly():
+    global days_left
     sigh_up = 0
     for i in range(0, max_days):
+        days_left = max_days - 1 - i
         if sigh_up == 0:
             sigh_up = pick_new_lib(i)
         sigh_up -= 1
